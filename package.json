@@ -1,0 +1,22 @@
+{
+  "name": "shoestore-react",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "echo \"Use project-specific lint scripts\" && exit 0",
+    "test": "echo \"Use project-specific test scripts\" && exit 0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.49.0",
+    "@typescript-eslint/parser": "^8.49.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.25"
+  }
+}
