@@ -1,42 +1,48 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import App from "./App"
 
-import App from './App'
+describe("App routing + state", () => {
+  beforeEach(() => {
+    // каждый тест стартует с чистого урла и хранилища
+    window.history.pushState({}, "", "/catalog")
+    localStorage.clear()
+  })
 
-describe('App', () => {
-  test('открывает карточку из каталога и добавляет товар в корзину', () => {
+  it("каталог → карточка → добавить в корзину → корзина", async () => {
     render(<App />)
 
-    // По умолчанию виден каталог обуви
-    expect(
-      screen.getByRole('heading', { name: /каталог обуви/i, level: 2 })
-    ).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Каталог" })).toBeInTheDocument()
 
-    // Кликаем по первому товару в каталоге
+    fireEvent.click(screen.getByRole("link", { name: "Кроссовки Basic" }))
+    expect(screen.getByRole("heading", { name: "Кроссовки Basic" })).toBeInTheDocument()
 
-    const firstProductTitle = screen.getByRole('heading', {
-      name: /кроссовки nike w air zoom pegasus 41 se/i,
-      level: 3
+    fireEvent.click(screen.getByRole("button", { name: "Добавить в корзину" }))
+
+    fireEvent.click(screen.getByRole("link", { name: /Корзина/i }))
+    expect(screen.getByRole("heading", { name: "Корзина" })).toBeInTheDocument()
+    expect(screen.getByText("Кроссовки Basic")).toBeInTheDocument()
+  })
+
+  it("404 работает", () => {
+    window.history.pushState({}, "", "/some-unknown-route")
+    render(<App />)
+
+    expect(screen.getByRole("heading", { name: "404" })).toBeInTheDocument()
+    expect(screen.getByText(/страница не найдена/i)).toBeInTheDocument()
+  })
+
+  it("сохраняет корзину в localStorage", async () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole("link", { name: "Кроссовки Basic" }))
+    fireEvent.click(screen.getByRole("button", { name: "Добавить в корзину" }))
+
+    await waitFor(() => {
+      const raw = localStorage.getItem("shoestore.cart")
+      expect(raw).toBeTruthy()
+      const parsed = JSON.parse(raw as string)
+      expect(Array.isArray(parsed)).toBe(true)
+      expect(parsed.length).toBeGreaterThan(0)
     })
-
-    fireEvent.click(firstProductTitle)
-
-    // Открылась страница "Карточка товара"
-    expect(
-      screen.getByRole('heading', { name: /карточка товара/i, level: 2 })
-    ).toBeInTheDocument()
-
-    // Добавляем товар в корзину
-
-    const addToCartButton = screen.getByRole('button', {
-      name: /добавить в корзину/i
-    })
-
-    fireEvent.click(addToCartButton)
-
-    // В шапке у корзины появился 1 товар
-
-    const cartButton = screen.getByRole('button', { name: /корзина/i })
-
-    expect(cartButton).toHaveTextContent(/1 шт/i)
   })
 })
