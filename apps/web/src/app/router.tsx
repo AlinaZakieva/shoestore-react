@@ -6,6 +6,7 @@ import { LoginPage } from "../pages/LoginPage"
 import { NotFoundPage } from "../pages/NotFoundPage"
 import { ProductPage } from "../pages/ProductPage"
 import { RegisterPage } from "../pages/RegisterPage"
+import { FavoritesPage } from "../pages/FavoritesPage"
 
 export function createAppRouter() {
   return createBrowserRouter([
@@ -19,6 +20,7 @@ export function createAppRouter() {
         { path: "/auth/login", element: <LoginPage /> },
         { path: "/auth/register", element: <RegisterPage /> },
         { path: "*", element: <NotFoundPage /> },
+        { path: "/favorites", element: <FavoritesPage /> },
       ],
     },
   ])

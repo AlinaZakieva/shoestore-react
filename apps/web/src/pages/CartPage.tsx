@@ -1,24 +1,10 @@
-import { useMemo } from "react"
 import { Link } from "react-router-dom"
 import { useCart } from "../entities/cart/cartContext"
-import { MOCK_PRODUCTS } from "../entities/product/mockProducts"
 
 export function CartPage() {
-  const { items, remove, setQty, clear } = useCart()
+  const { items, totalPrice, addItem, decreaseItem, removeItem, clear } = useCart()
 
-  const rows = useMemo(() => {
-    return items
-      .map((x) => {
-        const product = MOCK_PRODUCTS.find((p) => p.id === x.productId)
-        if (!product) return null
-        return { ...x, product }
-      })
-      .filter(Boolean)
-  }, [items])
-
-  const total = rows.reduce((sum, r) => sum + r!.product.price * r!.qty, 0)
-
-  if (rows.length === 0) {
+  if (items.length === 0) {
     return (
       <div>
         <h1>Корзина</h1>
@@ -32,35 +18,47 @@ export function CartPage() {
     <div>
       <h1>Корзина</h1>
 
-      <ul style={{ display: "grid", gap: 10, paddingLeft: 16 }}>
-        {rows.map((r) => (
-          <li key={r!.productId} style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <Link to={`/product/${r!.productId}`}>{r!.product.title}</Link>
-            <span>{r!.product.price} ₽</span>
+      <div style={{ display: "grid", gap: 12 }}>
+        {items.map((it) => (
+          <div key={it.id} style={{ display: "grid", gap: 6 }}>
+            <div>
+              <strong>{it.title}</strong>
+            </div>
 
-            <input
-              aria-label={`qty-${r!.productId}`}
-              type="number"
-              min={0}
-              value={r!.qty}
-              onChange={(e) => setQty(r!.productId, Number(e.target.value))}
-              style={{ width: 80 }}
-            />
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <button type="button" onClick={() => decreaseItem(it.id, 1)}>
+                Меньше
+              </button>
 
-            <button type="button" onClick={() => remove(r!.productId)}>
-              Удалить
-            </button>
-          </li>
+              <span>{it.qty} шт</span>
+
+              <button
+                type="button"
+                onClick={() => addItem({ id: it.id, title: it.title, price: it.price, image: it.image }, 1)}
+              >
+                Больше
+              </button>
+
+              <button type="button" onClick={() => removeItem(it.id)}>
+                Удаление
+              </button>
+
+              <span>{it.price} руб.</span>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
 
-      <p>
-        Итого: <b>{total} ₽</b>
-      </p>
+      <hr />
 
-      <button type="button" onClick={clear}>
-        Очистить корзину
-      </button>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <strong>Итого: {totalPrice.toFixed(2)} руб.</strong>
+        <button type="button" onClick={clear}>
+          Сбросить корзину
+        </button>
+      </div>
     </div>
   )
 }
+
+export default CartPage

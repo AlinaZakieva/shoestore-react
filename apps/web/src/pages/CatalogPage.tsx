@@ -1,82 +1,90 @@
-import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
-import { useFavorites } from "../entities/favorites/favoritesContext"
-import { MOCK_PRODUCTS } from "../entities/product/mockProducts"
-import type { Product } from "../entities/product/types"
+import { useCart } from "../entities/cart/cartContext"
 
-type Sort = "price_asc" | "price_desc" | "title_asc"
-
-function applySearchFilterSort(products: Product[], q: string, category: string, sort: Sort): Product[] {
-  const query = q.trim().toLowerCase()
-
-  let res = products
-
-  if (category !== "all") {
-    res = res.filter((p) => p.category === category)
-  }
-
-  if (query) {
-    res = res.filter((p) => (p.title + " " + p.description).toLowerCase().includes(query))
-  }
-
-  if (sort === "price_asc") res = [...res].sort((a, b) => a.price - b.price)
-  if (sort === "price_desc") res = [...res].sort((a, b) => b.price - a.price)
-  if (sort === "title_asc") res = [...res].sort((a, b) => a.title.localeCompare(b.title))
-
-  return res
+type Product = {
+  id: string
+  title: string
+  price: number
+  image: string
+  description: string
 }
+
+const PRODUCTS: Product[] = [
+  {
+    id: "1",
+    title: "Полусапоги Abricot",
+    price: 4380,
+    image:
+      "https://avatars.mds.yandex.net/get-mpic/15243415/2a000001988268ef14701382f4363b437367/optimize",
+    description: "Тёплые полусапоги для осени и зимы.",
+  },
+  {
+    id: "2",
+    title: "Кроссовки City Run",
+    price: 2990,
+    image:
+      "https://avatars.mds.yandex.net/get-mpic/5237357/img_id1756867732095401238.jpeg/optimize",
+    description: "Лёгкие кроссовки на каждый день.",
+  },
+  {
+    id: "3",
+    title: "Туфли Classic",
+    price: 3590,
+    image:
+      "https://avatars.mds.yandex.net/get-mpic/5267638/img_id1667433820201832367.jpeg/optimize",
+    description: "Классические туфли для офиса.",
+  },
+]
 
 export function CatalogPage() {
-  const { toggle, has } = useFavorites()
-  const [q, setQ] = useState("")
-  const [category, setCategory] = useState("all")
-  const [sort, setSort] = useState<Sort>("price_asc")
-
-  const categories = useMemo(() => {
-    const set = new Set(MOCK_PRODUCTS.map((p) => p.category))
-    return ["all", ...Array.from(set)]
-  }, [])
-
-  const products = useMemo(() => applySearchFilterSort(MOCK_PRODUCTS, q, category, sort), [q, category, sort])
+  const { addItem } = useCart()
 
   return (
-    <div>
+    <section className="section">
       <h1>Каталог</h1>
 
-      <div style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Поиск..."
-          aria-label="search"
-        />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: 16,
+        }}
+      >
+        {PRODUCTS.map((p) => (
+          <article key={p.id} className="product-card" style={{ display: "grid", gap: 8 }}>
+            <Link to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <div style={{ display: "grid", gap: 8 }}>
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 8 }}
+                />
+                <h3 style={{ margin: 0 }}>{p.title}</h3>
+              </div>
+            </Link>
 
-        <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="category">
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c === "all" ? "Все категории" : c}
-            </option>
-          ))}
-        </select>
-
-        <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="sort">
-          <option value="price_asc">Цена: по возрастанию</option>
-          <option value="price_desc">Цена: по убыванию</option>
-          <option value="title_asc">Название: A→Z</option>
-        </select>
-      </div>
-
-      <ul style={{ display: "grid", gap: 10, paddingLeft: 16 }}>
-        {products.map((p) => (
-          <li key={p.id} style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <Link to={`/product/${p.id}`}>{p.title}</Link>
-            <span>{p.price} ₽</span>
-            <button type="button" onClick={() => toggle(p.id)}>
-              {has(p.id) ? "★" : "☆"}
-            </button>
-          </li>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+              <span>{p.price} ₽</span>
+              <button
+                className="product-card__button"
+                type="button"
+                onClick={() =>
+                  addItem({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    image: p.image,
+                  })
+                }
+              >
+                Добавить в корзину
+              </button>
+            </div>
+          </article>
         ))}
-      </ul>
-    </div>
+      </div>
+    </section>
   )
 }
+
+export default CatalogPage

@@ -1,0 +1,121 @@
+import { useMemo } from "react"
+import { Link, useParams } from "react-router-dom"
+import { useCart } from "../entities/cart/cartContext"
+import { useFavorites } from "../entities/favorites/favoritesContext"
+import { MOCK_PRODUCTS } from "../entities/product/mockProducts"
+
+const productCharacteristics: Record<string, string[]> = {
+  "1": [
+    "Бренд: Nike",
+    "Модель: W AIR ZOOM PEGASUS 41 SE",
+    "Тип: беговые кроссовки",
+    "Материал: текстиль / синтетические материалы",
+    "Назначение: тренировки и повседневная носка",
+  ],
+  "2": [
+    "Бренд: Nike",
+    "Модель: WMNS AIR MAX 90 NN",
+    "Тип: кроссовки на каждый день",
+    "Материал: искусственная кожа и текстиль",
+    "Амортизация: система AIR MAX",
+  ],
+  "3": [
+    "Бренд: Puma",
+    "Модель: Club II Era",
+    "Тип: кеды в винтажном стиле",
+    "Материал: мягкая замша и кожа",
+    "Назначение: прогулки по городу",
+  ],
+  "4": [
+    "Бренд: Abricot",
+    "Тип: тёплые полусапоги",
+    "Материал: верх — искусственная кожа, подклад — утеплитель",
+    "Сезон: осень / зима",
+    "Особенности: удобная колодка для повседневной носки",
+  ],
+}
+
+function getCharacteristics(productId: string): string[] {
+  return (
+    productCharacteristics[productId] ?? [
+      "Материал: натуральная кожа / текстиль",
+      "Размеры: 36–45",
+      "Производитель: ShoeStore",
+    ]
+  )
+}
+
+export function ProductPage() {
+  const { id } = useParams()
+  const { add } = useCart()
+  const { toggle, has } = useFavorites()
+
+  const product = useMemo(() => MOCK_PRODUCTS.find((p) => p.id === id), [id])
+
+  if (!product) {
+    return (
+      <div className="section">
+        <h2>Товар не найден</h2>
+        <Link to="/catalog" className="product-page__back-button">
+          ← Назад в каталог
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <section className="section">
+      <h2>Карточка товара</h2>
+
+      <Link to="/catalog" className="product-page__back-button">
+        ← Назад в каталог
+      </Link>
+
+      <div className="product-page">
+        <div className="product-page__image">
+          <img
+            src={product.imageUrl}
+            alt={product.title}
+            className="product-page__image-el"
+          />
+        </div>
+
+        <div className="product-page__details">
+          <h3>{product.title}</h3>
+
+          <p className="product-page__price">
+            {product.price.toFixed(0)}
+            {"\u00A0₽"}
+          </p>
+
+          <p>{product.description}</p>
+
+          <h4>Характеристики</h4>
+          <ul>
+            {getCharacteristics(product.id).map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+
+          <div className="product-page__actions">
+            <button
+              type="button"
+              className="product-card__button"
+              onClick={() => add(product.id)}
+            >
+              Добавить в корзину
+            </button>
+
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => toggle(product.id)}
+            >
+              {has(product.id) ? "Убрать из избранного" : "В избранное"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -1,39 +1,52 @@
-import { Link, Outlet } from "react-router-dom"
-import { useAuth } from "../../entities/auth/authContext"
-import { useCart } from "../../entities/cart/cartContext"
+import { Link, NavLink, Outlet } from "react-router-dom";
+import { useCart } from "../../entities/cart/cartContext";
 
 export function AppLayout() {
-  const { user, logout } = useAuth()
-  const { items } = useCart()
+  const { totalCount, totalPrice } = useCart();
 
-  const cartCount = items.reduce((sum, x) => sum + x.qty, 0)
+  const formatMoney = (v: number) => {
+    if (!Number.isFinite(v)) return "0.00";
+    return v.toFixed(2);
+  };
 
   return (
-    <div style={{ padding: 16 }}>
-      <header style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
-        <Link to="/catalog">Каталог</Link>
-        <Link to="/cart">Корзина ({cartCount})</Link>
+    <div className="app">
+      <header className="app-header">
+        <div className="app-header__top">
+          <Link className="app-logo" to="/catalog">
+            ShoeStore
+          </Link>
 
-        <div style={{ marginLeft: "auto", display: "flex", gap: 12, alignItems: "center" }}>
-          {user ? (
-            <>
-              <span>{user.email}</span>
-              <button type="button" onClick={logout}>
-                Выйти
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/auth/login">Вход</Link>
-              <Link to="/auth/register">Регистрация</Link>
-            </>
-          )}
+          <nav className="app-nav">
+            <NavLink className={({ isActive }) => `app-nav__link ${isActive ? "is-active" : ""}`} to="/catalog">
+              Каталог
+            </NavLink>
+          </nav>
+
+          <div className="app-header__right">
+            <NavLink className={({ isActive }) => `app-nav__link ${isActive ? "is-active" : ""}`} to="/favorites">
+              Избранное
+            </NavLink>
+
+            <Link className="app-cart" to="/cart">
+              <span className="app-cart__label">Корзина</span>
+              <span className="app-cart__info">
+                {totalCount} шт · {formatMoney(totalPrice)} ₽
+              </span>
+            </Link>
+
+            <Link className="app-nav__link" to="/auth/login">
+              Вход
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main>
+      <main className="app-main">
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
+
+export default AppLayout;
