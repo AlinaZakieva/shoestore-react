@@ -1,86 +1,102 @@
+import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { useCart } from "../entities/cart/cartContext"
+import { MOCK_PRODUCTS } from "../entities/product/mockProducts"
+import { useFavorites } from "../entities/favorites/favoritesContext"
 
-type Product = {
-  id: string
-  title: string
-  price: number
-  image: string
-  description: string
-}
-
-const PRODUCTS: Product[] = [
-  {
-    id: "1",
-    title: "Полусапоги Abricot",
-    price: 4380,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/15243415/2a000001988268ef14701382f4363b437367/optimize",
-    description: "Тёплые полусапоги для осени и зимы.",
-  },
-  {
-    id: "2",
-    title: "Кроссовки City Run",
-    price: 2990,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/5237357/img_id1756867732095401238.jpeg/optimize",
-    description: "Лёгкие кроссовки на каждый день.",
-  },
-  {
-    id: "3",
-    title: "Туфли Classic",
-    price: 3590,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/5267638/img_id1667433820201832367.jpeg/optimize",
-    description: "Классические туфли для офиса.",
-  },
-]
+type SortMode = "none" | "priceAsc" | "priceDesc" | "titleAsc"
 
 export function CatalogPage() {
+  const { toggle, has } = useFavorites()
   const { addItem } = useCart()
 
-  return (
-    <section className="section">
-      <h1>Каталог</h1>
+  const [query, setQuery] = useState("")
+  const [sort, setSort] = useState<SortMode>("none")
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 16,
-        }}
-      >
-        {PRODUCTS.map((p) => (
-          <article key={p.id} className="product-card" style={{ display: "grid", gap: 8 }}>
-            <Link to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
-              <div style={{ display: "grid", gap: 8 }}>
-                <img
-                  src={p.image}
-                  alt={p.title}
-                  style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 8 }}
-                />
-                <h3 style={{ margin: 0 }}>{p.title}</h3>
+  const items = useMemo(() => {
+    const q = query.trim().toLowerCase()
+
+    let res = MOCK_PRODUCTS.filter((p) => p.title.toLowerCase().includes(q))
+
+    switch (sort) {
+      case "priceAsc":
+        res = [...res].sort((a, b) => a.price - b.price)
+        break
+      case "priceDesc":
+        res = [...res].sort((a, b) => b.price - a.price)
+        break
+      case "titleAsc":
+        res = [...res].sort((a, b) => a.title.localeCompare(b.title, "ru"))
+        break
+      default:
+        break
+    }
+
+    return res
+  }, [query, sort])
+
+  return (
+    <section className="section product-catalog">
+      <h1>Каталог обуви</h1>
+
+      <div className="catalog-controls">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Поиск по названию"
+          aria-label="Поиск по названию"
+        />
+
+        <select value={sort} onChange={(e) => setSort(e.target.value as SortMode)} aria-label="Сортировка">
+          <option value="none">Без сортировки</option>
+          <option value="priceAsc">Цена по возрастанию</option>
+          <option value="priceDesc">Цена по убыванию</option>
+          <option value="titleAsc">По названию</option>
+        </select>
+      </div>
+
+      <div className="product-catalog__grid">
+        {items.map((p) => (
+          <article key={p.id} className="product-card">
+            <Link className="product-card__link" to={`/product/${p.id}`}>
+              <div className="product-card__image-wrapper">
+                <img className="product-card__image" src={p.imageUrl} alt={p.title} />
               </div>
+
+              <h3 className="product-card__title">{p.title}</h3>
+              <p className="product-card__description">{p.description}</p>
             </Link>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-              <span>{p.price} ₽</span>
-              <button
-                className="product-card__button"
-                type="button"
-                onClick={() =>
-                  addItem({
-                    id: p.id,
-                    title: p.title,
-                    price: p.price,
-                    image: p.image,
-                  })
-                }
-              >
-                Добавить в корзину
-              </button>
-            </div>
-          </article>
+              <div className="product-card__footer">
+                <div className="product-card__price">{p.price} ₽</div>
+
+                <div className="product-card__footer-actions">
+                  <button
+                    className="product-card__button"
+                    type="button"
+                    onClick={() =>
+                      addItem({
+                        id: p.id,
+                        title: p.title,
+                        price: p.price,
+                        image: p.imageUrl,
+                      })
+                    }
+                  >
+                    Добавить в корзину
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`product-card__fav-inline ${has(p.id) ? "is-active" : ""}`}
+                    onClick={() => toggle(p.id)}
+                    aria-label={has(p.id) ? "Убрать из избранного" : "Добавить в избранное"}
+                    title={has(p.id) ? "Убрать из избранного" : "Добавить в избранное"}
+                  >
+</button>
+                </div>
+              </div>
+            </article>
         ))}
       </div>
     </section>

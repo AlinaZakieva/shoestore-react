@@ -1,114 +1,70 @@
-import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useCart } from "../entities/cart/cartContext";
-
-type Product = {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-  description: string;
-  features: string[];
-};
-
-// Мини-каталог внутри страницы (чтобы всё точно работало без зависимости от других файлов)
-const PRODUCTS: Product[] = [
-  {
-    id: "1",
-    title: "Полусапоги Abricot",
-    price: 4380,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/15243415/2a000001988268ef14701382f4363b437367/optimize",
-    description: "Тёплые полусапоги для осени и зимы.",
-    features: [
-      "Бренд: Abricot",
-      "Тип: тёплые полусапоги",
-      "Материал: верх — искусственная кожа, подклад — утеплитель",
-      "Сезон: осень / зима",
-      "Особенности: удобная колодка для повседневной носки",
-    ],
-  },
-  {
-    id: "2",
-    title: "Кроссовки City Run",
-    price: 2990,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/5237357/img_id1756867732095401238.jpeg/optimize",
-    description: "Лёгкие кроссовки на каждый день.",
-    features: ["Тип: кроссовки", "Сезон: демисезон", "Подошва: EVA", "Стиль: повседневный"],
-  },
-  {
-    id: "3",
-    title: "Туфли Classic",
-    price: 3590,
-    image:
-      "https://avatars.mds.yandex.net/get-mpic/5267638/img_id1667433820201832367.jpeg/optimize",
-    description: "Классические туфли для офиса.",
-    features: ["Тип: туфли", "Сезон: круглогодично", "Материал: искусственная кожа", "Стиль: классика"],
-  },
-];
+import { Link, useParams } from "react-router-dom"
+import { MOCK_PRODUCTS } from "../entities/product/mockProducts"
+import { useCart } from "../entities/cart/cartContext"
 
 export function ProductPage() {
-  const params = useParams();
-  const id = String(params.id ?? "1");
+  const { id } = useParams()
+  const { addItem } = useCart()
 
-  const product = useMemo(() => {
-    return PRODUCTS.find((p) => p.id === id) ?? PRODUCTS[0];
-  }, [id]);
+  const product = MOCK_PRODUCTS.find((p) => p.id === id)
 
-  const { addItem } = useCart();
-
-  const onAddToCart = () => {
-    addItem({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      image: product.image,
-    });
-  };
+  if (!product) {
+    return (
+      <section className="section">
+        <h1>Товар не найден</h1>
+        <Link className="product-page__back-button" to="/catalog">
+          ← Назад в каталог
+        </Link>
+      </section>
+    )
+  }
 
   return (
     <section className="section">
-      <h2>Карточка товара</h2>
-
-      <Link className="product-page__back-button" to="/catalog">
-        ← Назад в каталог
-      </Link>
+      <h1>Карточка товара</h1>
 
       <div className="product-page">
-        <div className="product-page__image">
-          <img alt={product.title} className="product-page__image-el" src={product.image} />
+        <Link className="product-page__back-button" to="/catalog">
+          ← Назад в каталог
+        </Link>
+
+        <div className="product-page__imageWrap">
+          <img className="product-page__image" src={product.imageUrl} alt={product.title} />
         </div>
 
         <div className="product-page__details">
-          <h3>{product.title}</h3>
+          <h1>{product.title}</h1>
+          <div className="product-page__price">{product.price} ₽</div>
 
-          <p className="product-page__price">
-            {product.price} ₽
-          </p>
+          <p className="product-page__desc">{product.description}</p>
 
-          <p>{product.description}</p>
-
-          <h4>Характеристики</h4>
+          <h2>Характеристики</h2>
           <ul>
-            {product.features.map((f) => (
-              <li key={f}>{f}</li>
+            {product.features.map((x) => (
+              <li key={x}>{x}</li>
             ))}
           </ul>
 
           <div className="product-page__actions">
-            <button className="product-card__button" type="button" onClick={onAddToCart}>
+            <button
+              className="product-card__button"
+              type="button"
+              onClick={() =>
+                addItem({
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  image: product.imageUrl,
+                })
+              }
+            >
               Добавить в корзину
-            </button>
-
-            <button className="button-secondary" type="button">
-              В избранное
             </button>
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default ProductPage;
+export default ProductPage

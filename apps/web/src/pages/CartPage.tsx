@@ -6,54 +6,53 @@ export function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div>
+      <div className="cart-page">
         <h1>Корзина</h1>
-        <p>Пусто.</p>
-        <Link to="/catalog">Перейти в каталог</Link>
+        <p className="cart-page__empty">Пусто.</p>
+        <Link className="link-pill" to="/catalog">Перейти в каталог</Link>
       </div>
     )
   }
 
   return (
-    <div>
+    <div className="cart-page">
       <h1>Корзина</h1>
 
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="cart-page__list">
         {items.map((it) => (
-          <div key={it.id} style={{ display: "grid", gap: 6 }}>
-            <div>
+          <div key={it.id} className="cart-page__item">
+            <div className="cart-page__item-title">
               <strong>{it.title}</strong>
             </div>
 
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <button type="button" onClick={() => decreaseItem(it.id, 1)}>
-                Меньше
+            <div className="cart-page__row">
+              <button className="cart-page__btn" type="button" onClick={() => decreaseItem(it.id, 1)}>
+                −
               </button>
 
-              <span>{it.qty} шт</span>
+              <span className="cart-page__qty">{it.qty} шт</span>
 
               <button
                 type="button"
                 onClick={() => addItem({ id: it.id, title: it.title, price: it.price, image: it.image }, 1)}
+                className="cart-page__btn" aria-label="Увеличить" title="Увеличить"
               >
-                Больше
+                +
               </button>
 
-              <button type="button" onClick={() => removeItem(it.id)}>
-                Удаление
+              <button className="cart-page__btn cart-page__btn--danger" type="button" onClick={() => removeItem(it.id)}>
+                Удалить
               </button>
 
-              <span>{it.price} руб.</span>
+              <span className="cart-page__item-price">{it.price} руб.</span>
             </div>
           </div>
         ))}
       </div>
 
-      <hr />
-
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="cart-page__summary">
         <strong>Итого: {totalPrice.toFixed(2)} руб.</strong>
-        <button type="button" onClick={clear}>
+        <button className="cart-page__btn cart-page__btn--ghost" type="button" onClick={clear}>
           Сбросить корзину
         </button>
       </div>

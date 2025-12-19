@@ -5,4 +5,5 @@ export type Product = {
   price: number
   category: string
   imageUrl: string
+  features: string[]
 }

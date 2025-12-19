@@ -9,6 +9,12 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 20990,
     category: "Кроссовки",
     imageUrl: "https://avatars.mds.yandex.net/get-mpic/15242005/img_id3780048994985185153.jpeg/optimize",
+    features: [
+      "Бренд: Nike",
+      "Тип: беговые кроссовки",
+      "Амортизация: Air Zoom",
+      "Назначение: тренировки / повседневная носка",
+    ],
   },
   {
     id: "2",
@@ -18,6 +24,13 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 16490,
     category: "Кроссовки",
     imageUrl: "https://avatars.mds.yandex.net/get-mpic/15419534/img_id7951864692354829226.jpeg/optimize",
+    features: [
+      "Бренд: Nike",
+      "Тип: кроссовки",
+      "Амортизация: AIR MAX",
+      "Материал: текстиль / синтетика",
+      "Назначение: город / повседневная носка",
+    ],
   },
   {
     id: "3",
@@ -27,6 +40,12 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 7199,
     category: "Кеды",
     imageUrl: "https://avatars.mds.yandex.net/get-mpic/16430688/img_id24540000894949583.jpeg/optimize",
+    features: [
+      "Бренд: Puma",
+      "Тип: кеды",
+      "Материал: замша / кожа",
+      "Стиль: повседневный",
+    ],
   },
   {
     id: "4",
@@ -35,5 +54,12 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 4380,
     category: "Сапоги",
     imageUrl: "https://avatars.mds.yandex.net/get-mpic/15243415/2a000001988268ef14701382f4363b437367/optimize",
+    features: [
+      "Бренд: Abricot",
+      "Тип: тёплые полусапоги",
+      "Материал: верх — искусственная кожа, подклад — утеплитель",
+      "Сезон: осень / зима",
+      "Особенности: удобная колодка для повседневной носки",
+    ],
   },
 ]
