@@ -1,0 +1,21 @@
+
+# local backups
+*.bak
+
+# editor
+.vscode/
+
+# deps
+node_modules/
+**/node_modules/
+
+# build
+dist/
+**/dist/
+
+# macOS
+.DS_Store
+
+# OS / editor junk
+.DS_Store
+*.bak
