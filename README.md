@@ -1,6 +1,6 @@
 # ShoeStore (React + TypeScript)
 
-SPA-магазин обуви на React + TypeScript.
+Магазин обуви на React + TypeScript.
 
 Функциональность:
 - каталог товаров с поиском и сортировкой
@@ -32,3 +32,10 @@ npm -ws run lint
 npm -ws run test
 npm -ws run build
 ```
+## Скриншоты
+
+Каталог: (apps/web/public/images/каталог товаров.png)
+Карточка товара: (apps/web/public/images/карточка товара.png)
+Корзина: (apps/web/public/images/корзина.png)
+Избранное: (apps/web/public/images/избранное.png)
+404: (apps/web/public/images/404.png)
