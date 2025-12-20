@@ -1,6 +1,6 @@
 # ShoeStore (React + TypeScript)
 
-SPA-магазин обуви на React + TypeScript.
+Магазин обуви на React + TypeScript.
 
 Функциональность:
 - каталог товаров с поиском и сортировкой
